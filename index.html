@@ -31,7 +31,7 @@ table, td, tr {
 
 Name: <input type="text" class="fillIn" />
 
-Date: <input type="text" class="fillIn" />
+Date: <input type="text" id="dateField" class="fillIn" />
 
 <pre>
 </pre>
@@ -39,8 +39,7 @@ Date: <input type="text" class="fillIn" />
 <table id="formTable">
   <tbody id="forTableBody">
   </tbody>
-</table>
-
+ </table>
 <body>      
       <form>
          <input type = "button" value = "Print FRAT Card" onClick = "window.print()" />
@@ -60,7 +59,9 @@ Student Signature: &nbsp;&nbsp; ________________________________________________
 
 Instructor Signature: __________________________________________________________
 
+
 <script>
+	let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 	 let sections = [
     {title:"Pilot Qualifications and Conditions", 
      	questions:[
@@ -174,7 +175,7 @@ Instructor Signature: __________________________________________________________
   totalRow.appendChild(throwAwayTd2);
   tableBody.appendChild(totalRow);
   
-  
+  setDate();
   
   
   function adjustTotal(value, isClicked) {
@@ -191,6 +192,12 @@ Instructor Signature: __________________________________________________________
         totalRowElement.className="";
       }
 
+  }
+  
+  function setDate() {
+	var date = new Date();
+  
+	document.getElementById("dateField").value = monthNames[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
   }
   
   
