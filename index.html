@@ -1,225 +1,244 @@
-<style>
-	body {
-		font-family: "Helvetica Neue", Helvetica, sans-serif;
-	}
-	  
-	table, td, tr {
-		border: 1px solid black;
-	}
-	  
-	.headerCell {
-		color: white;
-		background-color: blue;
-		width: 100%;
-	}
-	  
-	.mediumRisk {
-		background-color: yellow;
-	}
-	  
-	.highRisk {
-		background-color: red;
-		color: white;
-	}
+<html>
+	<head>
+		<style>
+			body {
+				font-family: "Helvetica Neue", Helvetica, sans-serif;
+			}
+			  
+			table, td, tr {
+				border: 1px solid black;
+			}
+			  
+			.headerCell {
+				color: white;
+				background-color: blue;
+				width: 100%;
+			}
+			  
+			.mediumRisk {
+				background-color: yellow;
+			}
+			  
+			.highRisk {
+				background-color: red;
+				color: white;
+			}
 
-	.fillIn {
-		border: 0;
-		border-bottom: 1px solid #000;
-	}
+			.fillIn {
+				border: 0;
+				border-bottom: 1px solid #000;
+			}
 
-	@media print {
-		.headerCell {
-			color: white;
-			background-color: blue;
-			width: 100%;
-			-webkit-print-color-adjust: exact;
-		}
-	  
-		.mediumRisk {
-			background-color: yellow;
-			-webkit-print-color-adjust: exact;
-		}
+			@media print {
+				.headerCell {
+					color: white;
+					background-color: blue;
+					width: 100%;
+					-webkit-print-color-adjust: exact;
+				}
+			  
+				.mediumRisk {
+					background-color: yellow;
+					-webkit-print-color-adjust: exact;
+				}
+				  
+				.highRisk {
+					background-color: red;
+					color: white;
+					-webkit-print-color-adjust: exact;
+				}
+				
+				.printButton {
+					display: none;
+				}
+				
+				body {
+					margin: 0 auto auto auto;
+					transform: scale(0.82);
+				}
+				
+				/*hack to get it down to 1 page*/
+				html {
+					height: 99%;
+				}
+				
+				@page {
+					margin: -0.3in 0.5in 0.5in 0.5in;
+					size: A4;
+				}
+
+			}
+
+		</style>
+	</head>
+	<body>
+
+		Name: <input type="text" class="fillIn" />
+
+		Date: <input type="text" id="dateField" class="fillIn" />
+
+		<pre></pre>
+
+		<table id="formTable">
+		  <tbody id="forTableBody">
+		  </tbody>
+		 </table>
+		
+		  <form>
+			 <input type = "button" value = "Print FRAT Card" onClick = "window.print()" class="printButton"/>
+		  </form>   
+
+
+		<pre>
+		</pre>
+
+		Student Signature: &nbsp;&nbsp; __________________________________________________________
+		<pre>
+		</pre>
+
+		Instructor Signature: __________________________________________________________
+		<script>
+			let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+			 let sections = [
+			{title:"Pilot Qualifications and Conditions", 
+				questions:[
+						{text:"Student Pilot", points:5},
+						{text:"Solo", points:5},
+						{text:"Instrument Rated and Current/Proficient", points:-2},
+						{text:"Less than 50 Hours in Type or Make/Model", points:1},
+						{text:"Last Dual Instruction more than 90 Days Ago", points:3},
+						{text:"Duty Day more than 14 Hours", points:4},
+						{text:"Less than 7 Hours of Sleep Last Night", points:3},
+						{text:"Major Chronic or Acute Stress Within the Last 24 Hours", points:3},
+						{text:"Any Illness within the Last 24 Hours", points:3}
+				]
+			},
+			{title:"Operating Environment", 
+				questions:[
+						{text:"Destination is non-Towered", points:2},
+						{text:"Unfamiliar with Departure and Arrival Airports", points:1},
+						{text:"No Maintenance at Destination", points:2},
+						{text:"Planned Operations on Unimproved Surfaces", points:3},
+						{text:"Wet Runway", points:2},
+						{text:"Twilight Operations", points:2},
+						{text:"Night Operations", points:5},
+						{text:"Runway Length Less than 3000 Feet", points:3},
+						{text:"Stopping Distance Greater than 80% of Available Runway", points:5},
+						{text:"Popup Trip (Less than 4 Hour Notice)", points:2},
+						{text:"International Operations", points:2},
+						{text:"Weather Forecasted to Deteriorate within 2 Hours", points:5},
+						{text:"Destination Does not have Weather Reporting", points:3},
+						{text:"Temperature/Dewpoint Spread Within 2 Degrees", points:4},
+						{text:"Thunderstorms are Present or Forecasted Along Route", points:7},
+						{text:"Moderate to Severe Turbulence Reported by Similar or Larger Type Aircraft Along Route", points:5},
+						{text:"Less than VFR Conditions (MVFR, IFR, LIFR) Along Route", points:5},
+						{text:"Moderate to Heavy Rain at Departure or Destination Airports", points:3},
+						{text:"Freezing Level Below 5000 Feet AGL", points:3},
+						{text:"Surface Winds Greater than 20kt", points:3},
+						{text:"Crosswind Greater than 15kt", points:4},
+						{text:"Over Water Operations", points:3}
+				]
+			},
+			{title:"Equipment", 
+				questions:[
+						{text:"Aircraft is ADS-B Equipped", points:1},
+						{text:"Aircraft Has Inop or Malfunctioning Equipment", points:3},
+						{text:"Life Jackets or Raft Needed", points:3},
+						{text:"Less than 5 Hours Until Next Maintenance Due", points:2},
+						{text:"Unverified or Open Squawk on the Aircraft", points:2},
+						{text:"Engine Break-in", points:10}
+				]
+			}
+		  ];
 		  
-		.highRisk {
-			background-color: red;
-			color: white;
-			-webkit-print-color-adjust: exact;
-		}
-	}
+		  //risk intervals: [-inf, 21) [21 40), [40, inf]
+		  var mediumRiskThreshold = 21;
+		  var highRiskThreshold = 40;
+		  
+		  
+		  let numberOfColumns = 4;
+			var currentTotal = 0;
+		   
+		  let tableBody = document.getElementById("forTableBody");
+		  for (var index = 0; index < sections.length; ++index) {
+			let section = sections[index];
+			
+			var sectionHeader = document.createElement("tr");
+			sectionHeader.className="headerRow";
+			
+			var headerCell = document.createElement("td");
+			headerCell.innerHTML=section.title;
+			headerCell.className="headerCell";
+			headerCell.colSpan=numberOfColumns;
+			
+			sectionHeader.appendChild(headerCell);
+			tableBody.appendChild(sectionHeader);
+			
+			for (var subindex = 0; subindex < section.questions.length; ++subindex) {
+					let questionRowData = section.questions[subindex];
+				var questionRow = document.createElement("tr");
+				
+				let questionIndexCell = document.createElement("td");
+				questionIndexCell.innerHTML=""+(subindex+1)+"";
+				questionRow.appendChild(questionIndexCell);
+			  
+				let questionText = document.createElement("td");
+				questionText.innerHTML=questionRowData.text;
+				questionRow.appendChild(questionText);
+			  
+				let questionPointsCell = document.createElement("td");
+				questionPointsCell.innerHTML=questionRowData.points;
+				questionRow.appendChild(questionPointsCell);
+			  
+				let questionAppliesCheckbox = document.createElement("td");
+				questionAppliesCheckbox.innerHTML="<input type=\"checkbox\" class=\"checkBoxForForm\" onClick=\"adjustTotal("+questionRowData.points+", this.checked)\">";
+				questionRow.appendChild(questionAppliesCheckbox);
+				
+			  
+				tableBody.appendChild(questionRow);
+			}
+		  }
+		  var totalRow = document.createElement("tr");
+		  totalRow.id="totalRowForForm";
+		  var throwAwayTd =  document.createElement("td");
+		  totalRow.appendChild(throwAwayTd);
+		  var totalText =  document.createElement("td");
+		  totalText.innerHTML = "Total:";
+		  totalRow.appendChild(totalText);
+		  var totalAmt =  document.createElement("td");
+		  totalAmt.id = "totalForForm";
+		  totalAmt.innerHTML = currentTotal;
+		  totalRow.appendChild(totalAmt);
+		  var throwAwayTd2 =  document.createElement("td");
+		  totalRow.appendChild(throwAwayTd2);
+		  tableBody.appendChild(totalRow);
+		  
+		  setDate();
+		  
+		  
+		  function adjustTotal(value, isClicked) {
+					let totalAmountElement = document.getElementById("totalForForm");
+				currentTotal += value*(isClicked ? 1 : -1);
+				totalAmountElement.innerHTML = currentTotal;
+			
+				let totalRowElement = document.getElementById("totalRowForForm");
+				if (currentTotal >= highRiskThreshold) {
+				totalRowElement.className="highRisk";
+			  } else if (currentTotal >= mediumRiskThreshold) {
+				totalRowElement.className="mediumRisk";
+			  } else {
+				totalRowElement.className="";
+			  }
 
-</style>
-
-Name: <input type="text" class="fillIn" />
-
-Date: <input type="text" id="dateField" class="fillIn" />
-
-<pre>
-</pre>
-
-<table id="formTable">
-  <tbody id="forTableBody">
-  </tbody>
- </table>
-<body>      
-      <form>
-         <input type = "button" value = "Print FRAT Card" onClick = "window.print()" />
-      </form>   
-</body>
-
-<pre>
-</pre>
-
-Student Signature: &nbsp;&nbsp; __________________________________________________________
-
-
-<pre>
-<pre>
-</pre>
-</pre>
-
-Instructor Signature: __________________________________________________________
-
-
-<script>
-	let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-	 let sections = [
-    {title:"Pilot Qualifications and Conditions", 
-     	questions:[
-     			{text:"Student Pilot", points:5},
-    			{text:"Solo", points:5},
-				{text:"Instrument Rated and Current/Proficient", points:-2},
-				{text:"Less than 50 Hours in Type or Make/Model", points:1},
-				{text:"Last Dual Instruction more than 90 Days Ago", points:3},
-				{text:"Duty Day more than 14 Hours", points:4},
-				{text:"Less than 7 Hours of Sleep Last Night", points:3},
-				{text:"Major Chronic or Acute Stress Within the Last 24 Hours", points:3},
-				{text:"Any Illness within the Last 24 Hours", points:3}
-  		]
-  	},
-    {title:"Operating Environment", 
-     	questions:[
-     			{text:"Destination is non-Towered", points:2},
-				{text:"Unfamiliar with Departure and Arrival Airports", points:1},
-				{text:"No Maintenance at Destination", points:2},
-				{text:"Planned Operations on Unimproved Surfaces", points:3},
-				{text:"Wet Runway", points:2},
-				{text:"Twilight Operations", points:2},
-				{text:"Night Operations", points:5},
-				{text:"Runway Length Less than 3000 Feet", points:3},
-				{text:"Stopping Distance Greater than 80% of Available Runway", points:5},
-				{text:"Popup Trip (Less than 4 Hour Notice)", points:2},
-				{text:"International Operations", points:2},
-				{text:"Weather Forecasted to Deteriorate within 2 Hours", points:5},
-				{text:"Destination Does not have Weather Reporting", points:3},
-				{text:"Temperature/Dewpoint Spread Within 2 Degrees", points:4},
-				{text:"Thunderstorms are Present or Forecasted Along Route", points:7},
-				{text:"Moderate to Severe Turbulence Reported by Similar or Larger Type Aircraft Along Route", points:5},
-				{text:"Less than VFR Conditions (MVFR, IFR, LIFR) Along Route", points:5},
-				{text:"Moderate to Heavy Rain at Departure or Destination Airports", points:3},
-				{text:"Freezing Level Below 5000 Feet AGL", points:3},
-				{text:"Surface Winds Greater than 20kt", points:3},
-				{text:"Crosswind Greater than 15kt", points:4},
-				{text:"Over Water Operations", points:3}
-  		]
-  	},
-	{title:"Equipment", 
-     	questions:[
-     			{text:"Aircraft is ADS-B Equipped", points:1},
-				{text:"Aircraft Has Inop or Malfunctioning Equipment", points:3},
-				{text:"Life Jackets or Raft Needed", points:3},
-				{text:"Less than 5 Hours Until Next Maintenance Due", points:2},
-				{text:"Unverified or Open Squawk on the Aircraft", points:2},
-				{text:"Engine Break-in", points:10}
-  		]
-  	}
-  ];
-  
-  //risk intervals: [-inf, 21) [21 40), [40, inf]
-  var mediumRiskThreshold = 21;
-  var highRiskThreshold = 40;
-  
-  
-  let numberOfColumns = 4;
- 	var currentTotal = 0;
-   
-  let tableBody = document.getElementById("forTableBody");
-  for (var index = 0; index < sections.length; ++index) {
-    let section = sections[index];
-    
-    var sectionHeader = document.createElement("tr");
-    sectionHeader.className="headerRow";
-    
-    var headerCell = document.createElement("td");
-    headerCell.innerHTML=section.title;
-    headerCell.className="headerCell";
-    headerCell.colSpan=numberOfColumns;
-    
-    sectionHeader.appendChild(headerCell);
-   	tableBody.appendChild(sectionHeader);
-    
-    for (var subindex = 0; subindex < section.questions.length; ++subindex) {
-     	 	let questionRowData = section.questions[subindex];
-      	var questionRow = document.createElement("tr");
-      	
-      	let questionIndexCell = document.createElement("td");
-      	questionIndexCell.innerHTML=""+(subindex+1)+"";
-      	questionRow.appendChild(questionIndexCell);
-      
-      	let questionText = document.createElement("td");
-      	questionText.innerHTML=questionRowData.text;
-      	questionRow.appendChild(questionText);
-      
-        let questionPointsCell = document.createElement("td");
-      	questionPointsCell.innerHTML=questionRowData.points;
-      	questionRow.appendChild(questionPointsCell);
-      
-        let questionAppliesCheckbox = document.createElement("td");
-      	questionAppliesCheckbox.innerHTML="<input type=\"checkbox\" class=\"checkBoxForForm\" onClick=\"adjustTotal("+questionRowData.points+", this.checked)\">";
-      	questionRow.appendChild(questionAppliesCheckbox);
-      	
-      
-      	tableBody.appendChild(questionRow);
-    }
-  }
-  var totalRow = document.createElement("tr");
-  totalRow.id="totalRowForForm";
-  var throwAwayTd =  document.createElement("td");
-  totalRow.appendChild(throwAwayTd);
-  var totalText =  document.createElement("td");
-  totalText.innerHTML = "Total:";
-  totalRow.appendChild(totalText);
-  var totalAmt =  document.createElement("td");
-  totalAmt.id = "totalForForm";
-  totalAmt.innerHTML = currentTotal;
-  totalRow.appendChild(totalAmt);
-  var throwAwayTd2 =  document.createElement("td");
-  totalRow.appendChild(throwAwayTd2);
-  tableBody.appendChild(totalRow);
-  
-  setDate();
-  
-  
-  function adjustTotal(value, isClicked) {
-		 	let totalAmountElement = document.getElementById("totalForForm");
-    	currentTotal += value*(isClicked ? 1 : -1);
-    	totalAmountElement.innerHTML = currentTotal;
-    
-    	let totalRowElement = document.getElementById("totalRowForForm");
-    	if (currentTotal >= highRiskThreshold) {
-        totalRowElement.className="highRisk";
-      } else if (currentTotal >= mediumRiskThreshold) {
-        totalRowElement.className="mediumRisk";
-      } else {
-        totalRowElement.className="";
-      }
-
-  }
-  
-  function setDate() {
-	var date = new Date();
-  
-	document.getElementById("dateField").value = monthNames[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
-  }
-  
-  
-</script>
+		  }
+		  
+		  function setDate() {
+			var date = new Date();
+		  
+			document.getElementById("dateField").value = monthNames[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+		  }
+		  
+		  
+		</script>
+	</body>
+</html>
