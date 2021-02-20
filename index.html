@@ -1,31 +1,51 @@
 <style>
-body {
-  font-family: "Helvetica Neue", Helvetica, sans-serif;
-}
-  
-table, td, tr {
-	border: 1px solid black;
-}
-  
-.headerCell {
-	color: white;
-  background-color: blue;
-  width: 100%;
-}
-  
-.mediumRisk {
-	background-color: yellow;
-}
-  
-.highRisk {
-	background-color: red;
-  color: white;
-}
+	body {
+		font-family: "Helvetica Neue", Helvetica, sans-serif;
+	}
+	  
+	table, td, tr {
+		border: 1px solid black;
+	}
+	  
+	.headerCell {
+		color: white;
+		background-color: blue;
+		width: 100%;
+	}
+	  
+	.mediumRisk {
+		background-color: yellow;
+	}
+	  
+	.highRisk {
+		background-color: red;
+		color: white;
+	}
 
-.fillIn {
-    border: 0;
-    border-bottom: 1px solid #000;
-}
+	.fillIn {
+		border: 0;
+		border-bottom: 1px solid #000;
+	}
+
+	@media print {
+		.headerCell {
+			color: white;
+			background-color: blue;
+			width: 100%;
+			-webkit-print-color-adjust: exact;
+		}
+	  
+		.mediumRisk {
+			background-color: yellow;
+			-webkit-print-color-adjust: exact;
+		}
+		  
+		.highRisk {
+			background-color: red;
+			color: white;
+			-webkit-print-color-adjust: exact;
+		}
+	}
 
 </style>
 
@@ -114,6 +134,7 @@ Instructor Signature: __________________________________________________________
   	}
   ];
   
+  //risk intervals: [-inf, 21) [21 40), [40, inf]
   var mediumRiskThreshold = 21;
   var highRiskThreshold = 40;
   
@@ -184,9 +205,9 @@ Instructor Signature: __________________________________________________________
     	totalAmountElement.innerHTML = currentTotal;
     
     	let totalRowElement = document.getElementById("totalRowForForm");
-    	if (currentTotal > highRiskThreshold) {
+    	if (currentTotal >= highRiskThreshold) {
         totalRowElement.className="highRisk";
-      } else if (currentTotal > mediumRiskThreshold) {
+      } else if (currentTotal >= mediumRiskThreshold) {
         totalRowElement.className="mediumRisk";
       } else {
         totalRowElement.className="";
