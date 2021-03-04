@@ -143,10 +143,13 @@
 						{id:"", text:"Instrument Rated and Current/Proficient", points:-2},
 						{id:"", text:"Less than 50 Hours in Type or Make/Model", points:1},
 						{id:"", text:"Last Dual Instruction more than 90 Days Ago", points:3},
+						{id:"", text:"Duty Day more than 7 Hours", points:2},
 						{id:"", text:"Duty Day more than 14 Hours", points:4},
 						{id:"", text:"Less than 7 Hours of Sleep Last Night", points:3},
 						{id:"", text:"Major Chronic or Acute Stress Within the Last 24 Hours", points:3},
-						{id:"", text:"Any Illness within the Last 24 Hours", points:3}
+						{id:"", text:"Any Illness within the Last 24 Hours", points:3},
+						{id:"", text:"Any Medication that could cause Drowsyness within the Last 12 Hours", points:4},
+						{id:"", text:"Any Alchohol within the Last 12 Hours", points:4},
 				]
 			},
 			{title:"Operating Environment", 
@@ -171,18 +174,17 @@
 						{id:"", text:"Moderate to Heavy Rain at Departure or Destination Airports", points:3},
 						{id:"", text:"Freezing Level Below 5000 Feet AGL", points:3},
 						{id:"", text:"Surface Winds Greater than 20kt", points:3},
-						{id:"", text:"Crosswind Greater than 15kt", points:4},
-						{id:"", text:"Over Water Operations", points:3}
+						{id:"", text:"Crosswind Greater than 15kt", points:4}
 				]
 			},
 			{title:"Equipment", 
 				questions:[
 						{id:"", text:"Aircraft is ADS-B Equipped", points:1},
-						{id:"", text:"Aircraft Has Inop or Malfunctioning Equipment", points:3},
-						{id:"", text:"Life Jackets or Raft Needed", points:3},
+						{id:"", text:"Over Water Operations: Life Jackets Required", points:3},
+						{id:"", text:"Over Water Operations: Raft Required", points:5},
+						{id:"", text:"Aircraft Has Inop or Deferred Equipment", points:3},
 						{id:"", text:"Less than 5 Hours Until Next Maintenance Due", points:2},
-						{id:"", text:"Unverified or Open Squawk on the Aircraft", points:2},
-						{id:"", text:"Engine Break-in", points:10}
+						{id:"", text:"Maintenance Test Flight (MFT Employees Only)", points:10}
 				]
 			}
 		  ];
